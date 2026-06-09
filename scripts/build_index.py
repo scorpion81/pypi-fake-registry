@@ -22,12 +22,12 @@ for pkg_dir in BASE.iterdir():
         encoding="utf-8"
     )
 
-    PKGS.append(pkg_dir)
+    PKGS.append(pkg_dir.replace(f"/{BASE}", ""))
 
 html = ["<html><body>"]
 for pkg in PKGS:
     html.append(
-        f'<a href="{pkg}">{pkg}</a><br/>'
+        f'<a href="{pkg}/">{pkg}</a><br/>'
     )
 html.append("</body></html>")
 

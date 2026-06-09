@@ -1,7 +1,7 @@
 from pathlib import Path
 
 BASE = Path("site/simple")
-
+PKGS = []
 for pkg_dir in BASE.iterdir():
     if not pkg_dir.is_dir():
         continue
@@ -21,6 +21,20 @@ for pkg_dir in BASE.iterdir():
         "\n".join(html),
         encoding="utf-8"
     )
+
+    PKGS.append(pkg_dir)
+
+html = ["<html><body>"]
+for pkg in PKGS:
+    html.append(
+        f'<a href="{pkg}">{pkg}</a><br/>'
+    )
+html.append("</body></html>")
+
+(BASE / "index.html").write_text(
+    "\n".join(html),
+    encoding="utf-8"
+)
 
 root = Path("site")
 (root / "index.html").write_text("""

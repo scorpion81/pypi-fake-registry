@@ -78,20 +78,53 @@ jobs:
           cd packages/${{ matrix.package }}/repo
           python -m build --wheel
 
-      - name: Prepare registry folder
-        shell: bash
-        run: |
-          mkdir -p docs/simple/${{ matrix.package }}
-          cp packages/${{ matrix.package }}/repo/dist/*.whl docs/simple/${{ matrix.package }}/
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.package }}
+          path: source/dist/*.whl
 
-      - name: Build index
-        run: python scripts/build_index.py
+  assemble:
 
-      - name: Commit registry
-        shell: bash
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: all_wheels
+
+      - name: Flatten artifacts
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add docs
-          git commit -m "update cross-platform wheels" || exit 0
-          git push
+          mkdir merged
+          find all_wheels -name "*.whl" -exec cp {} merged/ \;
+
+      - name: Build registry
+        run: |
+          mkdir -p all_wheels
+          cp merged/*.whl all_wheels/
+
+          python scripts/build_registry.py
+          python scripts/build_index.py
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+
+    needs: assemble
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

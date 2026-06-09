@@ -1,21 +1,25 @@
 from pathlib import Path
 
-base = Path("docs/simple")
+BASE = Path("site/simple")
 
-for pkg in base.iterdir():
-    if not pkg.is_dir():
+for pkg_dir in BASE.iterdir():
+    if not pkg_dir.is_dir():
         continue
 
-    wheels = sorted(pkg.glob("*.whl"))
+    wheels = sorted(pkg_dir.glob("*.whl"))
 
-    html = "<html><body>\n"
+    html = ["<html><body>"]
 
-    for w in wheels:
-        # optional: highlight platform in name
-        html += f'<a href="{w.name}">{w.name}</a><br/>\n'
+    for wheel in wheels:
+        html.append(
+            f'<a href="{wheel.name}">{wheel.name}</a><br/>'
+        )
 
-    html += "</body></html>"
+    html.append("</body></html>")
 
-    (pkg / "index.html").write_text(html)
+    (pkg_dir / "index.html").write_text(
+        "\n".join(html),
+        encoding="utf-8"
+    )
 
-print("Cross-platform index built")
+print("Index generated")

@@ -46,7 +46,6 @@ jobs:
           choco install cmake -y
 
       - name: Clone external repo
-        working-directory: packages/${{ matrix.package }}
         run: |
           REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
           REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
@@ -62,16 +61,16 @@ jobs:
           CMAKE_OSX_ARCHITECTURES: "arm64;x86_64"
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
-        working-directory: packages/${{ matrix.package }}/repo
         run: |
+          cd repo
           python -m build --wheel
 
       - name: Build wheel (other OS)
         if: runner.os != 'macOS'
         env:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
-        working-directory: packages/${{ matrix.package }}/repo
         run: |
+          cd repo
           python -m build --wheel
 
       - name: Prepare registry folder

@@ -1,0 +1,15 @@
+packages:
+  pybullet:
+    repo: https://github.com/scorpion81/bullet3.git
+    ref: transform_batch
+    path: .
+
+  pyvoro:
+    repo: https://github.com/scorpion81/pyvoro.git
+    ref: master
+    path: .
+
+  pycork:
+    repo: https://github.com/scorpion81/pycork.git
+    ref: master
+    path: .

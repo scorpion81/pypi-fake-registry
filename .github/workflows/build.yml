@@ -1,0 +1,93 @@
+name: build-and-publish-cross-platform
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.13", "3.14"]
+        package: [pyvoro]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install build tools
+        run: pip install build pyyaml numpy cython
+
+     # ---------- Linux deps ----------
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libeigen3-dev libgmp-dev
+
+      # ---------- macOS deps ----------
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake
+
+      # ---------- Windows deps ----------
+      - name: Install Windows dependencies
+        if: runner.os == 'Windows'
+        run: |
+          choco install cmake -y
+
+      - name: Clone external repo
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
+
+          git clone --recursive $REPO repo
+          cd repo
+          git checkout $REF
+
+      - name: Build universal wheel (macOS)
+        if: runner.os == 'macOS'
+        env:
+          ARCHFLAGS: "-arch arm64 -arch x86_64"
+          CMAKE_OSX_ARCHITECTURES: "arm64;x86_64"
+          CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
+          CMAKE_ARGS: "-DCYTHONIZE=ON"
+        working-directory: packages/${{ matrix.package }}/repo
+        run: |
+          python -m build --wheel
+
+      - name: Build wheel (other OS)
+        if: runner.os != 'macOS'
+        env:
+          CMAKE_ARGS: "-DCYTHONIZE=ON"
+        working-directory: packages/${{ matrix.package }}/repo
+        run: |
+          python -m build --wheel
+
+      - name: Prepare registry folder
+        shell: bash
+        run: |
+          mkdir -p docs/simple/${{ matrix.package }}
+          cp packages/${{ matrix.package }}repo/dist/*.whl docs/simple/${{ matrix.package }}/
+
+      - name: Build index
+        run: python scripts/build_index.py
+
+      - name: Commit registry
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs
+          git commit -m "update cross-platform wheels" || exit 0
+          git push

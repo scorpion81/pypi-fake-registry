@@ -1,7 +1,7 @@
 import yaml
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[0]
 CONFIG = ROOT / "registry.yaml"
 
 def load_config():

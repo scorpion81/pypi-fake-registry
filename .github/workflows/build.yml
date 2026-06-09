@@ -12,8 +12,10 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.13", "3.14"]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
+        #python-version: ["3.13", "3.14"]
+        os: [ubuntu-latest]
+        python-version: ["3.13"]
         package: [pyvoro]
 
     steps:
@@ -22,6 +24,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Clone external repo
+        run: |
+          REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
+
+          git clone --recursive $REPO repo
+          cd repo
+          git checkout $REF
 
       - name: Install build tools
         run: pip install build pyyaml numpy cython
@@ -44,15 +55,6 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install cmake -y
-
-      - name: Clone external repo
-        run: |
-          REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
-          REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
-
-          git clone --recursive $REPO repo
-          cd repo
-          git checkout $REF
 
       - name: Build universal wheel (macOS)
         if: runner.os == 'macOS'

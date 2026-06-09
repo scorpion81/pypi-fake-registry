@@ -39,7 +39,7 @@ jobs:
           git checkout $REF
 
       - name: Install build tools
-        run: pip install build numpy cython
+        run: pip install build numpy cython scikit_build_core
 
      # ---------- Linux deps ----------
       - name: Install Linux dependencies

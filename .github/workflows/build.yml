@@ -33,8 +33,8 @@ jobs:
           REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
           REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
 
-          git clone --recursive $REPO repo
-          cd repo
+          git clone --recursive $REPO packages/${{ matrix.package }}/repo
+          cd packages/${{ matrix.package }}/repo
           git checkout $REF
 
       - name: Install build tools
@@ -67,7 +67,7 @@ jobs:
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
-          cd repo
+          cd packages/${{ matrix.package }}/repo
           python -m build --wheel
 
       - name: Build wheel (other OS)
@@ -75,7 +75,7 @@ jobs:
         env:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
-          cd repo
+          cd packages/${{ matrix.package }}/repo
           python -m build --wheel
 
       - name: Prepare registry folder

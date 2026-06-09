@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p docs/simple/${{ matrix.package }}
-          cp packages/${{ matrix.package }}repo/dist/*.whl docs/simple/${{ matrix.package }}/
+          cp packages/${{ matrix.package }}/repo/dist/*.whl docs/simple/${{ matrix.package }}/
 
       - name: Build index
         run: python scripts/build_index.py

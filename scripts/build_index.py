@@ -22,4 +22,13 @@ for pkg_dir in BASE.iterdir():
         encoding="utf-8"
     )
 
+root = Path("site")
+(root / "index.html").write_text("""
+<html>
+  <body>
+    <a href="simple/">Simple Index</a>
+  </body>
+</html>
+""")
+
 print("Index generated")

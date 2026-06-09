@@ -25,6 +25,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Pyyaml
+        run: pip install pyyaml
+
       - name: Clone external repo
         run: |
           REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
@@ -35,7 +38,7 @@ jobs:
           git checkout $REF
 
       - name: Install build tools
-        run: pip install build pyyaml numpy cython
+        run: pip install build numpy cython
 
      # ---------- Linux deps ----------
       - name: Install Linux dependencies

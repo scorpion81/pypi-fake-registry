@@ -47,16 +47,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake libeigen3-dev libgmp-dev
+          sudo apt-get install -y build-essential cmake
 
       # ---------- macOS deps ----------
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install cmake eigen@3
-          arch -arm64 brew install gmp
-          arch -x86_64 brew install gmp
-
+          brew install cmake
+          
       # ---------- Windows deps ----------
       - name: Install Windows dependencies
         if: runner.os == 'Windows'

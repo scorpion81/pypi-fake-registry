@@ -16,8 +16,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.13", "3.14"]
-        package: [pyvoro, pybullet]
+        python-version: ["3.13"]
+        package: [pycork]
 
     steps:
       - uses: actions/checkout@v4
@@ -134,5 +134,3 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          path: site

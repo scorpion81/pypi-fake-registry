@@ -80,7 +80,7 @@ jobs:
           VCPKG_TARGET_TRIPLET: "x64-osx"
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
-          PKG_CONFIG_LIBDIR: ${{ github.workspace }}/vcpkg/installed/x64-osx/lib/pkgconfig
+          PKG_CONFIG_LIBDIR: /usr/local/vcpkg/vcpkg/installed/x64-osx/lib/pkgconfig
         run: |
           cd packages/${{ matrix.package }}/repo
           CMAKE_BUILD_DIR=build-x64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation

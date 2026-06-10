@@ -47,13 +47,13 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake libgmp-dev
 
       # ---------- macOS deps ----------
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install autoconf
+          brew install automake autoconf libtool pkg-config
           vcpkg install gmp:x64-osx gmp:arm64-osx
           
       # ---------- Windows deps ----------

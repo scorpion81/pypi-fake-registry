@@ -54,6 +54,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install cmake eigen@3
+          arch -arm64 brew install gmp
+          arch -x86_64 brew install gmp
 
       # ---------- Windows deps ----------
       - name: Install Windows dependencies

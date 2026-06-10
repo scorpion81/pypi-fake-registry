@@ -53,7 +53,7 @@ jobs:
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install cmake eigen@3 gmp
+          brew install cmake eigen@3
 
       # ---------- Windows deps ----------
       - name: Install Windows dependencies

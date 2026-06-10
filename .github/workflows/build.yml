@@ -13,9 +13,6 @@ jobs:
       run:
         shell: bash
 
-    env:
-      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -56,6 +53,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install automake autoconf libtool
+          vcpkg install gmp:x64-osx
           
       # ---------- Windows deps ----------
       - name: Install Windows dependencies
@@ -73,6 +71,19 @@ jobs:
         run: |
           cd packages/${{ matrix.package }}/repo
           CMAKE_BUILD_DIR=build-arm64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
+
+      - name: Build x64 wheel (macOS)
+        if: runner.os == 'macOS'
+        env:
+          ARCHFLAGS: "-arch x86_64"
+          CMAKE_OSX_ARCHITECTURES: "x86_64"
+          VCPKG_TARGET_TRIPLET: "x64-osx"
+          CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
+          CMAKE_ARGS: "-DCYTHONIZE=ON"
+          PKG_CONFIG_LIBDIR: ${{ github.workspace }}/vcpkg/installed/x64-osx/lib/pkgconfig
+        run: |
+          cd packages/${{ matrix.package }}/repo
+          CMAKE_BUILD_DIR=build-x64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
 
       - name: Build wheel (other OS)
         if: runner.os != 'macOS'

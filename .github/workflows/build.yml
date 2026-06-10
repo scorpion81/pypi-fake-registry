@@ -80,6 +80,7 @@ jobs:
           VCPKG_TARGET_TRIPLET: "x64-osx"
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
+          CMAKE_TOOLCHAIN_FILE: /usr/local/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake
           PKG_CONFIG_LIBDIR: /usr/local/vcpkg/vcpkg/installed/x64-osx/lib/pkgconfig
         run: |
           cd packages/${{ matrix.package }}/repo

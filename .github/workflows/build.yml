@@ -72,7 +72,7 @@ jobs:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
           cd packages/${{ matrix.package }}/repo
-          CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
+          CMAKE_BUILD_DIR=build-arm64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
 
       - name: Build x64 wheel (macOS)
         if: runner.os == 'macOS'
@@ -84,7 +84,7 @@ jobs:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
           cd packages/${{ matrix.package }}/repo
-          CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
+          CMAKE_BUILD_DIR=build-x64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
 
       - name: Build wheel (other OS)
         if: runner.os != 'macOS'

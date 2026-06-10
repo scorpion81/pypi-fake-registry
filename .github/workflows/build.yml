@@ -53,7 +53,7 @@ jobs:
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          vcpkg install gmp
+          vcpkg install autoconf gmp
           
       # ---------- Windows deps ----------
       - name: Install Windows dependencies

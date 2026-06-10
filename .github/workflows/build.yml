@@ -53,13 +53,13 @@ jobs:
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install cmake
+          vcpkg install gmp
           
       # ---------- Windows deps ----------
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
         run: |
-          choco install cmake -y
+          vcpkg install gmp
 
       - name: Build universal wheel (macOS)
         if: runner.os == 'macOS'

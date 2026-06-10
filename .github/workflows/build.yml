@@ -55,6 +55,7 @@ jobs:
         run: |
           brew install automake autoconf libtool
           vcpkg install gmp:x64-osx gmp:arm64-osx
+          brew uninstall gmp
           
       # ---------- Windows deps ----------
       - name: Install Windows dependencies

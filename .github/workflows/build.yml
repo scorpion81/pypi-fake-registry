@@ -15,7 +15,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest]
         python-version: ["3.13"]
         package: [pycork]
 
@@ -52,7 +53,7 @@ jobs:
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install cmake
+          brew install cmake eigen@3
 
       # ---------- Windows deps ----------
       - name: Install Windows dependencies

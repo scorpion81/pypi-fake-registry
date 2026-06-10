@@ -54,13 +54,13 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install autoconf
-          vcpkg install gmp
+          vcpkg install gmp:x64-osx gmp:arm64-osx
           
       # ---------- Windows deps ----------
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
         run: |
-          vcpkg install gmp
+          vcpkg install gmp:x64-windows
 
       - name: Build universal wheel (macOS)
         if: runner.os == 'macOS'

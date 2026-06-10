@@ -67,6 +67,7 @@ jobs:
         env:
           ARCHFLAGS: "-arch arm64"
           CMAKE_OSX_ARCHITECTURES: "arm64"
+          VCPKG_TARGET_TRIPLET: "arm64-osx"
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
@@ -78,6 +79,7 @@ jobs:
         env:
           ARCHFLAGS: "-arch x86_64"
           CMAKE_OSX_ARCHITECTURES: "x86_64"
+          VCPKG_TARGET_TRIPLET: "x64-osx"
           CMAKE_OSX_DEPLOYMENT_TARGET: "10.12"
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |

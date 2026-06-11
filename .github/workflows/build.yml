@@ -44,7 +44,7 @@ jobs:
       - name: Install build tools (Linux)
         if: runner.os == 'Linux'
         run:
-          $PYTHON -m pip install pyyaml build numpy cmake cython scikit_build_core wheel setuptools
+          $PYTHON -m pip install pyyaml build numpy cmake cython scikit_build_core wheel setuptools ninja
 
       - name: Clone external repo
         if: runner.os != 'Linux'

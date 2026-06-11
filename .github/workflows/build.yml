@@ -103,7 +103,7 @@ jobs:
           DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
           docker run --rm \
             -v $DIR:/io \
-            quay.io/pypa/manylinux2_28_x86_64 \
+            quay.io/pypa/manylinux_2_28_x86_64 \
             bash -c "
               cd /io &&
               dnf install -y git curl zip unzip tar &&

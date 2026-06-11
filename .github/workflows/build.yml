@@ -107,15 +107,8 @@ jobs:
             bash -c "
               cd /io &&
               dnf install -y git curl zip unzip tar &&
-              dnf install -y pkgconfig autoconf automake libtool &&
-              dnf install -y gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ &&
-              source /opt/rh/gcc-toolset-12/enable &&
-              git clone https://github.com/microsoft/vcpkg.git &&
-              cd vcpkg &&
-              ./bootstrap-vcpkg.sh &&
-              ./vcpkg install gmp:x64-linux &&
-              cd .. && 
-              export PKG_CONFIG_LIBDIR=./vcpkg/installed/x64-osx/lib/pkgconfig &&
+              dnf install -y gmp-devel pkgconf-pkg-config &&
+              export PKG_CONFIG_PATH=/usr/lib64/pkgconfig &&
               /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja &&
               /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation &&
               auditwheel repair dist/*.whl -w dist/

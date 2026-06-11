@@ -114,6 +114,7 @@ jobs:
               cd vcpkg &&
               ./bootstrap-vcpkg.sh &&
               ./vcpkg install gmp:x64-linux &&
+              cd .. && 
               /opt/python/cp${PY}-cp${PY}/bin/pip install cmake numpy setuptools wheel &&
               /opt/python/cp${PY}-cp${PY}/bin/pip wheel . -w dist/ &&
               auditwheel repair dist/*.whl -w dist/

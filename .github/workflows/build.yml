@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.os == 'ubuntu-latest' && 'quay.io/pypa/manylinux_2_28_x86_64' || null }}
+    env:
+      PYD: ${{ matrix.python-version }}
+      PY: ${PYD//./}
+      PYTHON: ${{ matrix.os == 'ubuntu-latest' && '/opt/python/cp${PY}-cp${PY}/bin/python' || 'python' }}
 
     defaults:
       run:
@@ -31,27 +35,25 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Pyyaml
-        run: pip install pyyaml
+        run: $PYTHON -m pip install pyyaml
 
       - name: Clone external repo
         run: |
-          REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
-          REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
+          REPO=$($PYTHON scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$($PYTHON scripts/load_config.py ${{ matrix.package }} ref)
 
           git clone --recursive $REPO packages/${{ matrix.package }}/repo
           cd packages/${{ matrix.package }}/repo
           git checkout $REF
 
       - name: Install build tools
-        if: runner.os != 'Linux'
-        run: pip install build numpy cmake cython scikit_build_core wheel setuptools
+        run: $PYTHON -m pip install build numpy cmake cython scikit_build_core wheel setuptools
 
       # ---------- Linux deps ----------
-      # - name: Install Linux dependencies
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y build-essential cmake libgmp-dev
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          dnf install -y gmp-devel
 
       # ---------- macOS deps ----------
       - name: Install macOS dependencies
@@ -99,16 +101,13 @@ jobs:
           cd packages/${{ matrix.package }}/repo
           python -m build --wheel --no-isolation
 
-      - name: Build in manylinux container (isolated)
+      - name: Build in manylinux container
         if: runner.os == 'Linux'
+        env:
+          CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
-          PYD=${{ matrix.python-version }}
-          PY=${PYD//./}
-          DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
-          dnf install -y gmp-devel 
-          /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja
-          export CMAKE_ARGS="-DCYTHONIZE=ON"
-          /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation
+          cd /packages/${{ matrix.package }}/repo"
+          $PYTHON -m build --wheel --no-isolation
           auditwheel repair dist/*.whl -w wheelhouse/
 
       - name: Upload wheels (manylinux)

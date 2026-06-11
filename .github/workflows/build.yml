@@ -115,7 +115,7 @@ jobs:
               ./bootstrap-vcpkg.sh &&
               ./vcpkg install gmp:x64-linux &&
               cd .. && 
-              PKG_CONFIG_LIBDIR=./vcpkg/installed/x64-osx/lib/pkgconfig &&
+              export PKG_CONFIG_LIBDIR=./vcpkg/installed/x64-osx/lib/pkgconfig &&
               /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja &&
               /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation &&
               auditwheel repair dist/*.whl -w dist/

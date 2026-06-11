@@ -123,7 +123,7 @@ jobs:
         env:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
-          cd /packages/${{ matrix.package }}/repo"
+          cd /packages/${{ matrix.package }}/repo
           $PYTHON -m build --wheel --no-isolation
           auditwheel repair dist/*.whl -w wheelhouse/
 

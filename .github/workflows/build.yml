@@ -98,7 +98,7 @@ jobs:
       - name: Build in manylinux container (isolated)
         if: runner.os == 'Linux'
         run: |
-          PY="${${{ matrix.python-version }}//./}"
+          PY="${"${{ matrix.python-version }}"//./}"
           DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
           docker run --rm \
             -v $DIR:/io \

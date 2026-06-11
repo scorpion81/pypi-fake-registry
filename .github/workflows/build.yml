@@ -45,14 +45,14 @@ jobs:
           cd packages/${{ matrix.package }}/repo
           git checkout $REF
 
-      - name: Clone external repo
+      - name: Clone external repo (Linux)
         if: runner.os == 'Linux'
         run: |
           PYD=${{ matrix.python-version }}
           PY=${PYD//./}
           PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python
-          REPO=$($PYTHON scripts/load_config.py ${{ matrix.package }} repo)
-          REF=$($PYTHON scripts/load_config.py ${{ matrix.package }} ref)
+          REPO=$($PYTHON ../scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$($PYTHON ../scripts/load_config.py ${{ matrix.package }} ref)
 
           git clone --recursive $REPO packages/${{ matrix.package }}/repo
           cd packages/${{ matrix.package }}/repo

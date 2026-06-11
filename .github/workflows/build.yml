@@ -33,9 +33,9 @@ jobs:
         if: runner.os != 'Linux'
         run: python -m pip install pyyaml build numpy cmake cython scikit_build_core wheel setuptools
 
-      - id: pyver
+      - name: PYTHON Variable (Linux)
         if: runner.os == 'Linux'
-        run: 
+        run: |
           PYD=${{ matrix.python-version }}
           PY=${PYD//./}
           PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python

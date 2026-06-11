@@ -15,9 +15,9 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
         python-version: ["3.13", "3.14"]
-        package: [pycork, pyvoro, pybullet]
+        package: [pycork] #, pyvoro, pybullet]
 
     steps:
       - uses: actions/checkout@v4
@@ -39,14 +39,15 @@ jobs:
           git checkout $REF
 
       - name: Install build tools
+        if: runner.os != 'Linux'
         run: pip install build numpy cmake cython scikit_build_core wheel setuptools
 
-     # ---------- Linux deps ----------
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake libgmp-dev
+      # ---------- Linux deps ----------
+      # - name: Install Linux dependencies
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y build-essential cmake libgmp-dev
 
       # ---------- macOS deps ----------
       - name: Install macOS dependencies
@@ -86,13 +87,34 @@ jobs:
           cd packages/${{ matrix.package }}/repo
           CMAKE_BUILD_DIR=build-x64 CFLAGS="-fno-define-target-os-macros" python -m build --wheel --no-isolation
 
-      - name: Build wheel (other OS)
-        if: runner.os != 'macOS'
+      - name: Build wheel (Windows)
+        if: runner.os == 'Windows'
         env:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
           cd packages/${{ matrix.package }}/repo
           python -m build --wheel --no-isolation
+
+      - name: Build in manylinux container (isolated)
+        if: runner.os == 'Linux'
+        run: |
+          PY="${${{ matrix.python-version }}//./}"
+          DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
+          docker run --rm \
+            -v $DIR:/io \
+            quay.io/pypa/manylinux2014_x86_64 \
+            bash -c "
+              cd /io &&
+              yum install -y gmp-devel
+              /opt/python/cp${PY}-cp${PY}/bin/pip install numpy setuptools wheel &&
+              /opt/python/cp${PY}-cp${PY}/bin/pip wheel . -w dist/ &&
+              auditwheel repair dist/*.whl -w dist/
+            "
+      #- name: Upload artifact
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: linux-wheels
+      #    path: wheelhouse/*.whl
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4

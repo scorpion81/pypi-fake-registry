@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.os == 'ubuntu-latest' && 'quay.io/pypa/manylinux_2_28_x86_64' || null }}
+
     defaults:
       run:
         shell: bash
@@ -21,8 +23,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        if: runner.os != 'Linux'
 
       - uses: actions/setup-python@v5
+        if: runner.os != 'Linux'
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -101,17 +105,12 @@ jobs:
           PYD=${{ matrix.python-version }}
           PY=${PYD//./}
           DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
-          docker run --rm \
-            -v $DIR:/io \
-            quay.io/pypa/manylinux_2_28_x86_64 \
-            bash -c "
-              cd /io &&
-              dnf install -y gmp-devel &&
-              /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja &&
-              export CMAKE_ARGS="-DCYTHONIZE=ON" &&
-              /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation &&
-              auditwheel repair dist/*.whl -w wheelhouse/
-            "
+          dnf install -y gmp-devel 
+          /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja
+          export CMAKE_ARGS="-DCYTHONIZE=ON"
+          /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation
+          auditwheel repair dist/*.whl -w wheelhouse/
+
       - name: Upload wheels (manylinux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4

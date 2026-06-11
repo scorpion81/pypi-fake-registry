@@ -23,7 +23,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        if: runner.os != 'Linux'
 
       - uses: actions/setup-python@v5
         if: runner.os != 'Linux'
@@ -51,8 +50,8 @@ jobs:
           PYD=${{ matrix.python-version }}
           PY=${PYD//./}
           PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python
-          REPO=$($PYTHON ../scripts/load_config.py ${{ matrix.package }} repo)
-          REF=$($PYTHON ../scripts/load_config.py ${{ matrix.package }} ref)
+          REPO=$($PYTHON scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$($PYTHON scripts/load_config.py ${{ matrix.package }} ref)
 
           git clone --recursive $REPO packages/${{ matrix.package }}/repo
           cd packages/${{ matrix.package }}/repo

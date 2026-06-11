@@ -108,7 +108,7 @@ jobs:
               cd /io &&
               dnf install -y git curl zip unzip tar gmp-devel &&
               /opt/python/cp${PY}-cp${PY}/bin/pip install cmake numpy setuptools wheel &&
-              /opt/python/cp${PY}-cp${PY}/bin/pip wheel . -w dist/ &&
+              /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation &&
               auditwheel repair dist/*.whl -w dist/
             "
       #- name: Upload artifact

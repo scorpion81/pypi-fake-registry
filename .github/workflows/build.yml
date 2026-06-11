@@ -106,20 +106,20 @@ jobs:
             quay.io/pypa/manylinux_2_28_x86_64 \
             bash -c "
               cd /io &&
-              dnf install -y git curl zip unzip tar &&
-              dnf install -y gmp-devel pkgconf-pkg-config &&
-              export PKG_CONFIG_PATH=/usr/lib64/pkgconfig &&
+              dnf install -y gmp-devel &&
               /opt/python/cp${PY}-cp${PY}/bin/pip install build numpy cmake cython scikit_build_core wheel setuptools ninja &&
               /opt/python/cp${PY}-cp${PY}/bin/python -m build --wheel --no-isolation &&
-              auditwheel repair dist/*.whl -w dist/
+              auditwheel repair dist/*.whl -w wheelhouse/
             "
-      #- name: Upload artifact
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: linux-wheels
-      #    path: wheelhouse/*.whl
+      - name: Upload wheels (manylinux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.package }}
+          path: packages/${{ matrix.package }}/repo/wheelhouse/*.whl
 
       - name: Upload wheels
+        if: runner.os != 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.package }}

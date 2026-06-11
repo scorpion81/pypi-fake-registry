@@ -33,12 +33,24 @@ jobs:
         if: runner.os != 'Linux'
         run: python -m pip install pyyaml build numpy cmake cython scikit_build_core wheel setuptools
 
+      - id: pyver
+        if: runner.os == 'Linux'
+        run: 
+          PYD=${{ matrix.python-version }}
+          PY=${PYD//./}
+          PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python
+          echo "PYTHON=$PYTHON" >> "$GITHUB_ENV" 
+
+      - name: Install build tools (Linux)
+        if: runner.os == 'Linux'
+        run:
+          $PYTHON -m pip install pyyaml build numpy cmake cython scikit_build_core wheel setuptools
+
       - name: Clone external repo
         if: runner.os != 'Linux'
         run: |
-          PYTHON=python
-          REPO=$($PYTHON scripts/load_config.py ${{ matrix.package }} repo)
-          REF=$($PYTHON scripts/load_config.py ${{ matrix.package }} ref)
+          REPO=$(python scripts/load_config.py ${{ matrix.package }} repo)
+          REF=$(python scripts/load_config.py ${{ matrix.package }} ref)
 
           git clone --recursive $REPO packages/${{ matrix.package }}/repo
           cd packages/${{ matrix.package }}/repo
@@ -47,9 +59,6 @@ jobs:
       - name: Clone external repo (Linux)
         if: runner.os == 'Linux'
         run: |
-          PYD=${{ matrix.python-version }}
-          PY=${PYD//./}
-          PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python
           REPO=$($PYTHON scripts/load_config.py ${{ matrix.package }} repo)
           REF=$($PYTHON scripts/load_config.py ${{ matrix.package }} ref)
 
@@ -114,9 +123,6 @@ jobs:
         env:
           CMAKE_ARGS: "-DCYTHONIZE=ON"
         run: |
-          PYD=${{ matrix.python-version }}
-          PY=${PYD//./}
-          PYTHON=/opt/python/cp${PY}-cp${PY}/bin/python
           cd /packages/${{ matrix.package }}/repo"
           $PYTHON -m build --wheel --no-isolation
           auditwheel repair dist/*.whl -w wheelhouse/

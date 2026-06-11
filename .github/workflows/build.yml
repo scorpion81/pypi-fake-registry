@@ -103,13 +103,13 @@ jobs:
           DIR="${{ github.workspace }}/packages/${{ matrix.package }}/repo"
           docker run --rm \
             -v $DIR:/io \
-            quay.io/pypa/manylinux2014_x86_64 \
+            quay.io/pypa/manylinux2_28_x86_64 \
             bash -c "
               cd /io &&
-              yum install -y git curl zip unzip tar &&
-              yum install -y centos-release-scl &&
-              yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++ &&
-              source /opt/rh/devtoolset-9/enable &&
+              dnf install -y git curl zip unzip tar &&
+              dnf install -y pkgconfig autoconf automake libtool &&
+              dnf install -y gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ &&
+              source /opt/rh/gcc-toolset-12/enable &&
               git clone https://github.com/microsoft/vcpkg.git &&
               cd vcpkg &&
               ./bootstrap-vcpkg.sh &&

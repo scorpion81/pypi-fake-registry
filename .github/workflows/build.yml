@@ -106,8 +106,12 @@ jobs:
             quay.io/pypa/manylinux2014_x86_64 \
             bash -c "
               cd /io &&
-              yum install -y gmp-devel
-              /opt/python/cp${PY}-cp${PY}/bin/pip install numpy setuptools wheel &&
+              yum install -y git curl zip unzip tar &&
+              git clone https://github.com/microsoft/vcpkg.git &&
+              cd vcpkg &&
+              ./bootstrap-vcpkg.sh &&
+              ./vcpkg install gmp:x64-linux &&
+              /opt/python/cp${PY}-cp${PY}/bin/pip install cmake numpy setuptools wheel &&
               /opt/python/cp${PY}-cp${PY}/bin/pip wheel . -w dist/ &&
               auditwheel repair dist/*.whl -w dist/
             "
